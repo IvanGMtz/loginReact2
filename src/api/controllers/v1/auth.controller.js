@@ -1,6 +1,7 @@
 import { con } from "../../../services/connection/atlas.js";
 import { body, validationResult } from 'express-validator';
 import bcrypt from 'bcryptjs';
+import { createAccessToken } from "../../helpers/jwt.js";
 
 let db = await con();
 let collection = db.collection("user");
@@ -27,19 +28,26 @@ export const register = async (req, res) => {
         
         const password = await bcrypt.hash(req.body.password, 10)
 
-        const newUser = {
+        let newUser = {
             name: req.body.name,
             password: password,
             email: req.body.email
         };
 
         const result = await collection.insertOne(newUser);
+
+        newUser.id = result.insertedId;
+        newUser.createdAt = new Date();
+
+        const token = await createAccessToken({id: newUser.id})
+        res.cookie("token", token);
+
         res.status(201).json({
             message: "User added successfully", UserInfo: [{
-                id: result.insertedId,
-                name: req.body.name,
-                email: req.body.email,
-                createdAt: new Date()
+                id: newUser.id,
+                name: newUser.name,
+                email: newUser.email,
+                createdAt: newUser.createdAt
         }]  });
     } catch (error) {
         res.status(500).json({ message: "Error adding user", error: error.message });
@@ -47,5 +55,54 @@ export const register = async (req, res) => {
 } 
 
 export const login = async (req, res)=>{
+    try {
+        await Promise.all([
+            body('password').notEmpty().run(req),
+            body('email').isEmail().run(req)
+        ]);
 
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const userFound = await collection.findOne({ email: req.body.email });
+        if (!userFound)
+            return res.status(400).json({
+                message: "The email does not exist",
+            });
+        
+        const isMatch = await bcrypt.compare(req.body.password , userFound.password);
+        if (!isMatch) {
+            return res.status(400).json({
+                message: "The password is incorrect",
+            });
+        }
+
+        const token = await createAccessToken({
+            id: userFound._id,
+            username: userFound.username,
+        });
+
+        res.cookie("token", token, {
+            httpOnly: process.env.NODE_ENV !== "development",
+            secure: true,
+            sameSite: "none",
+        });
+
+        res.json({
+            id: userFound._id,
+            username: userFound.name,
+            email: userFound.email,
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 } 
+
+export const logout = async (req, res)=> {
+    res.cookie('token', '', {
+        expires: new Date(0)
+    })
+    return res.sendStatus(200);
+}
