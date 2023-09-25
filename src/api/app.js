@@ -11,7 +11,6 @@ app.use(morgan('dev'), cors());
 app.use(express.json());
 app.use('/', router);
 
-let config = JSON.parse(process.env.MY_SERVER);
-app.listen(config, ()=>{
-    console.log(`http://${config.hostname}:${config.port}`);
+app.listen(process.env.VITE_PORT_BACKEND, process.env.VITE_HOST,  ()=>{
+    console.log(`http://${process.env.VITE_HOST}:${process.env.VITE_PORT_BACKEND}`);
 });
