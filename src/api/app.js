@@ -3,12 +3,14 @@ import express from 'express';
 import router from './routes/index.js';
 import  morgan from 'morgan';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 dotenv.config();
 let app = express();
 
-app.use(morgan('dev'), cors());
 app.use(express.json());
+app.use(cookieParser());
+app.use(morgan('dev'), cors());
 app.use('/', router);
 
 app.listen(process.env.VITE_PORT_BACKEND, process.env.VITE_HOST,  ()=>{
