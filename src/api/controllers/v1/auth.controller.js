@@ -2,6 +2,7 @@ import { con } from "../../../services/connection/atlas.js";
 import { body, validationResult } from 'express-validator';
 import bcrypt from 'bcryptjs';
 import { createAccessToken } from "../../helpers/jwt.js";
+import { ObjectId } from "mongodb";
 
 let db = await con();
 let collection = db.collection("user");
@@ -84,11 +85,7 @@ export const login = async (req, res)=>{
             username: userFound.username,
         });
 
-        res.cookie("token", token, {
-            httpOnly: process.env.NODE_ENV !== "development",
-            secure: true,
-            sameSite: "none",
-        });
+        res.cookie("token", token);
 
         res.json({
             id: userFound._id,
@@ -105,4 +102,9 @@ export const logout = async (req, res)=> {
         expires: new Date(0)
     })
     return res.sendStatus(200);
+}
+
+export const profile = async (req, res)=> {
+    const user = await collection.findOne({_id: new ObjectId(req.user.id)});
+    return res.json(user);
 }
