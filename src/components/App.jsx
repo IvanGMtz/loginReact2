@@ -1,12 +1,20 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom"
+
 function App() {
 
   return (
-    <>
-      <div>
-        <h1>Hola mundo</h1>
-      </div>
-    </>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<h1>Home Page</h1>} />
+        <Route path="/login" element={<h1>Login</h1>} />
+        <Route path="/register" element={<h1>Register</h1>} />
+        <Route path="/tasks" element={<h1>Task Page</h1>} />
+        <Route path="/add-task" element={<h1>new task</h1>} />
+        <Route path="/tasks/:id" element={<h1>update task</h1>} />
+        <Route path="/profile" element={<h1>profile</h1>} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App
