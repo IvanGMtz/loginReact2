@@ -24,7 +24,7 @@ export const register = async (req, res) => {
 
         if (userFound)
             return res.status(400).json({
-                message: "The email is already in use",
+                message: ["The email is already in use"],
             });
         
         const password = await bcrypt.hash(req.body.password, 10)
@@ -70,13 +70,13 @@ export const login = async (req, res)=>{
         const userFound = await collection.findOne({ email: req.body.email });
         if (!userFound)
             return res.status(400).json({
-                message: "The email does not exist",
+                message: ["The email does not exist"],
             });
         
         const isMatch = await bcrypt.compare(req.body.password , userFound.password);
         if (!isMatch) {
             return res.status(400).json({
-                message: "The password is incorrect",
+                message: ["The password is incorrect"],
             });
         }
 
