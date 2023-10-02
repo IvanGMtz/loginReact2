@@ -10,7 +10,10 @@ let app = express();
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(morgan('dev'), cors());
+app.use(morgan('dev'), cors({
+    origin:`http://${process.env.VITE_HOST}:${process.env.VITE_PORT_FRONTEND}`,
+    credentials: true
+}));
 app.use('/', router);
 
 app.listen(process.env.VITE_PORT_BACKEND, process.env.VITE_HOST,  ()=>{
