@@ -3,6 +3,11 @@ import { body, validationResult } from 'express-validator';
 import bcrypt from 'bcryptjs';
 import { createAccessToken } from "../../helpers/jwt.js";
 import { ObjectId } from "mongodb";
+import jwt from "jsonwebtoken";
+import dotenv from 'dotenv';
+dotenv.config();
+
+const TOKEN_SECRET = process.env.TOKEN_SECRET;
 
 let db = await con();
 let collection = db.collection("user");
@@ -108,3 +113,21 @@ export const profile = async (req, res)=> {
     const user = await collection.findOne({_id: new ObjectId(req.user.id)});
     return res.json(user);
 }
+
+export const verifyToken = async (req, res) => {
+    const { token } = req.cookies;
+    if (!token) return res.send(false);
+  
+    jwt.verify(token, TOKEN_SECRET, async (error, user) => {
+      if (error) return res.sendStatus(401);
+  
+      const userFound = await collection.findOne({ _id: new ObjectId(user.id) });
+      if (!userFound) return res.sendStatus(401);
+  
+      return res.json({
+        id: userFound._id,
+        username: userFound.name,
+        email: userFound.email,
+      });
+    });
+  };
