@@ -1,10 +1,9 @@
 import { Link } from "react-router-dom";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "./context/AuthContext";
 import { ButtonLink } from "./ButtonLink";
 
 export default function Navbar() {
   const { isAuthenticated, logout, user } = useAuth();
-  console.log(isAuthenticated, user);
 
   return (
     <nav className="bg-zinc-700 my-3 flex justify-between py-5 px-10 rounded-lg">

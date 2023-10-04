@@ -3,7 +3,7 @@ import {
   registerRequest,
   loginRequest,
   verifyTokenRequest,
-} from "../../request/auth";
+} from "../../../request/auth";
 import Cookies from "js-cookie";
 
 export const AuthContext = createContext();

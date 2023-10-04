@@ -1,14 +1,14 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage";
-import { AuthProvider } from "./shared/AuthContext";
+import { AuthProvider } from "./shared/context/AuthContext";
 import Error404 from "./pages/Error404";
 import HomePage from "./pages/HomePage";
 import TaskPage from "./pages/TaskPage";
 import TaskFormPage from "./pages/TaskFormPage";
 import ProfilePage from "./pages/ProfilePage";
 import ProtectedRouted from "./shared/ProtectedRouted";
-import { TaskProvider } from "./shared/TaskContext";
+import { TaskProvider } from "./shared/context/TaskContext";
 import Navbar from "./shared/Navbar";
 
 function App() {
